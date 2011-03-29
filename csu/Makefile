@@ -178,7 +178,7 @@ $(addprefix $(objpfx),$(sort g$(start-installed-name) \
 # procedures, but we have nothing for them to do.  So compile empty files.
 $(addprefix $(objpfx),$(filter-out $(start-installed-name), $(csu-dummies))):\
   $(before-compile)
-	$(COMPILE.c) -o $@ -x c /dev/null
+	$(COMPILE.c) -o $@ empty.c
 
 # These headers are used by the startup code.
 $(objpfx)abi-tag.h: $(..)abi-tags
