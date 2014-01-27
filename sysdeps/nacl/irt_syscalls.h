@@ -34,7 +34,7 @@ extern int (*__nacl_irt_sysconf) (int name, int *value);
 extern int (*__nacl_irt_mkdir) (const char* pathname, mode_t mode);
 extern int (*__nacl_irt_rmdir) (const char* pathname);
 extern int (*__nacl_irt_chdir) (const char* pathname);
-extern int (*__nacl_irt_getcwd) (char* buf, size_t size, int *len);
+extern int (*__nacl_irt_getcwd) (char* buf, size_t size);
 
 extern int (*__nacl_irt_epoll_create) (int size, int *fd);
 extern int (*__nacl_irt_epoll_create1) (int flags, int *fd);
@@ -145,6 +145,25 @@ extern int (*__nacl_irt_clock_getres) (clockid_t clk_id, struct timespec *res);
 extern int (*__nacl_irt_clock_gettime) (clockid_t clk_id, struct timespec *tp);
 
 extern int (*__nacl_irt_getpid) (int *pid);
+
+extern int (*__nacl_irt_unlink)(const char *pathname);
+extern int (*__nacl_irt_truncate)(const char *pathname, off_t length);
+extern int (*__nacl_irt_lstat) (const char *pathname, struct nacl_abi_stat *);
+extern int (*__nacl_irt_link)(const char *oldpath, const char *newpath);
+extern int (*__nacl_irt_rename)(const char *oldpath, const char *newpath);
+extern int (*__nacl_irt_symlink)(const char *oldpath, const char *newpath);
+extern int (*__nacl_irt_chmod)(const char *path, mode_t mode);
+extern int (*__nacl_irt_access)(const char *path, int amode);
+extern int (*__nacl_irt_readlink)(const char *path, char *buf,
+                                  size_t count, size_t *nread);
+extern int (*__nacl_irt_utimes)(const char *filename,
+                                const struct timeval *times);
+
+extern int (*__nacl_irt_fchdir)(int fd);
+extern int (*__nacl_irt_fchmod)(int fd, mode_t mode);
+extern int (*__nacl_irt_fsync)(int fd);
+extern int (*__nacl_irt_fdatasync)(int fd);
+extern int (*__nacl_irt_ftruncate)(int fd, off_t length);
 
 #undef socklen_t
 

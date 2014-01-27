@@ -5,6 +5,7 @@
 #include <nacl_syscalls.h>
 #define stat nacl_abi_stat
 #include <irt.h>
+#include <irt_dev.h>
 #undef stat
 #include <irt_syscalls.h>
 #ifdef IS_IN_rtld
@@ -288,7 +289,7 @@ size_t (*__nacl_irt_query) (const char *interface_ident,
 int (*__nacl_irt_mkdir) (const char* pathname, mode_t mode);
 int (*__nacl_irt_rmdir) (const char* pathname);
 int (*__nacl_irt_chdir) (const char* pathname);
-int (*__nacl_irt_getcwd) (char* buf, size_t size, int *len);
+int (*__nacl_irt_getcwd) (char* buf, size_t size);
 
 void (*__nacl_irt_exit) (int status);
 int (*__nacl_irt_gettod) (struct timeval *tv);
@@ -399,6 +400,26 @@ int (*__nacl_irt_clock_gettime) (clockid_t clk_id, struct timespec *tp);
 
 int (*__nacl_irt_getpid) (int *pid);
 
+int (*__nacl_irt_unlink)(const char *pathname);
+int (*__nacl_irt_truncate)(const char *pathname, off_t length);
+int (*__nacl_irt_lstat) (const char *pathname, struct nacl_abi_stat *);
+int (*__nacl_irt_link)(const char *oldpath, const char *newpath);
+int (*__nacl_irt_rename)(const char *oldpath, const char *newpath);
+int (*__nacl_irt_symlink)(const char *oldpath, const char *newpath);
+int (*__nacl_irt_chmod)(const char *path, mode_t mode);
+int (*__nacl_irt_access)(const char *path, int amode);
+int (*__nacl_irt_readlink)(const char *path, char *buf,
+                           size_t count, size_t *nread);
+int (*__nacl_irt_utimes)(const char *filename,
+                         const struct timeval *times);
+
+int (*__nacl_irt_fchdir)(int fd);
+int (*__nacl_irt_fchmod)(int fd, mode_t mode);
+int (*__nacl_irt_fsync)(int fd);
+int (*__nacl_irt_fdatasync)(int fd);
+int (*__nacl_irt_ftruncate)(int fd, off_t length);
+
+
 void
 init_irt_table (void)
 {
@@ -415,6 +436,9 @@ init_irt_table (void)
     struct nacl_irt_resource_open nacl_irt_resource_open;
     struct nacl_irt_clock nacl_irt_clock;
     struct nacl_irt_dev_getpid nacl_irt_dev_getpid;
+    struct nacl_irt_dev_fdio nacl_irt_dev_fdio;
+    struct nacl_irt_dev_filename_v0_2 nacl_irt_dev_filename_v0_2;
+    struct nacl_irt_dev_filename nacl_irt_dev_filename;
   } u;
 
   if (__nacl_irt_query &&
@@ -633,13 +657,83 @@ init_irt_table (void)
       __nacl_irt_getpid = not_implemented;
     }
 
+  if (__nacl_irt_query &&
+      __nacl_irt_query (NACL_IRT_DEV_FDIO_v0_2, &u.nacl_irt_dev_fdio,
+			sizeof(u.nacl_irt_dev_fdio)) == sizeof(u.nacl_irt_dev_fdio))
+    {
+      __nacl_irt_fchdir = u.nacl_irt_dev_fdio.fchdir;
+      __nacl_irt_fchmod = u.nacl_irt_dev_fdio.fchmod;
+      __nacl_irt_fsync = u.nacl_irt_dev_fdio.fsync;
+      __nacl_irt_fdatasync = u.nacl_irt_dev_fdio.fdatasync;
+      __nacl_irt_ftruncate = u.nacl_irt_dev_fdio.ftruncate;
+    }
+  else
+    {
+      __nacl_irt_fchdir = not_implemented;
+      __nacl_irt_fchmod = not_implemented;
+      __nacl_irt_fsync = not_implemented;
+      __nacl_irt_fdatasync = not_implemented;
+      __nacl_irt_ftruncate = not_implemented;
+    }
+
+  if (__nacl_irt_query &&
+      __nacl_irt_query (NACL_IRT_DEV_FILENAME_v0_3, &u.nacl_irt_dev_filename,
+			sizeof(u.nacl_irt_dev_filename)) == sizeof(u.nacl_irt_dev_filename))
+    {
+      __nacl_irt_mkdir = u.nacl_irt_dev_filename.mkdir;
+      __nacl_irt_chdir = u.nacl_irt_dev_filename.chdir;
+      __nacl_irt_rmdir = u.nacl_irt_dev_filename.rmdir;
+      __nacl_irt_getcwd = u.nacl_irt_dev_filename.getcwd;
+      __nacl_irt_unlink = u.nacl_irt_dev_filename.unlink;
+      __nacl_irt_truncate = u.nacl_irt_dev_filename.truncate;
+      __nacl_irt_lstat = u.nacl_irt_dev_filename.lstat;
+      __nacl_irt_link = u.nacl_irt_dev_filename.link;
+      __nacl_irt_rename = u.nacl_irt_dev_filename.rename;
+      __nacl_irt_symlink = u.nacl_irt_dev_filename.symlink;
+      __nacl_irt_chmod = u.nacl_irt_dev_filename.chmod;
+      __nacl_irt_access = u.nacl_irt_dev_filename.access;
+      __nacl_irt_readlink = u.nacl_irt_dev_filename.readlink;
+      __nacl_irt_utimes = u.nacl_irt_dev_filename.utimes;
+    }
+  else if (__nacl_irt_query &&
+           __nacl_irt_query (NACL_IRT_DEV_FILENAME_v0_2, &u.nacl_irt_dev_filename_v0_2,
+                             sizeof(u.nacl_irt_dev_filename_v0_2)) == sizeof(u.nacl_irt_dev_filename_v0_2))
+    {
+      __nacl_irt_mkdir = u.nacl_irt_dev_filename_v0_2.mkdir;
+      __nacl_irt_chdir = u.nacl_irt_dev_filename_v0_2.chdir;
+      __nacl_irt_rmdir = u.nacl_irt_dev_filename_v0_2.rmdir;
+      __nacl_irt_getcwd = u.nacl_irt_dev_filename_v0_2.getcwd;
+      __nacl_irt_unlink = u.nacl_irt_dev_filename_v0_2.unlink;
+      __nacl_irt_truncate = not_implemented;
+      __nacl_irt_lstat = not_implemented;
+      __nacl_irt_link = not_implemented;
+      __nacl_irt_rename = not_implemented;
+      __nacl_irt_symlink = not_implemented;
+      __nacl_irt_chmod = not_implemented;
+      __nacl_irt_access = not_implemented;
+      __nacl_irt_readlink = not_implemented;
+      __nacl_irt_utimes = not_implemented;
+    }
+  else
+    {
+      __nacl_irt_mkdir = not_implemented;
+      __nacl_irt_chdir = not_implemented;
+      __nacl_irt_rmdir = not_implemented;
+      __nacl_irt_getcwd = not_implemented;
+      __nacl_irt_unlink = not_implemented;
+      __nacl_irt_truncate = not_implemented;
+      __nacl_irt_lstat = not_implemented;
+      __nacl_irt_link = not_implemented;
+      __nacl_irt_rename = not_implemented;
+      __nacl_irt_symlink = not_implemented;
+      __nacl_irt_chmod = not_implemented;
+      __nacl_irt_access = not_implemented;
+      __nacl_irt_readlink = not_implemented;
+      __nacl_irt_utimes = not_implemented;
+    }
+
   if (!__nacl_irt_query)
     __nacl_irt_query = no_interface;
-
-  __nacl_irt_mkdir = not_implemented;
-  __nacl_irt_chdir = not_implemented;
-  __nacl_irt_rmdir = not_implemented;
-  __nacl_irt_getcwd = not_implemented;
 
   __nacl_irt_epoll_create = not_implemented;
   __nacl_irt_epoll_create1 = not_implemented;

@@ -4,18 +4,17 @@
 
 #include <irt_syscalls.h>
 
-/* Truncate the file FD refers to to LENGTH bytes.  */
+/* Truncate PATH to LENGTH bytes.  */
 int
-__ftruncate (fd, length)
-     int fd;
+__truncate (path, length)
+     const char *path;
      off_t length;
 {
-  int result = __nacl_irt_ftruncate(fd, length);
+  int result = __nacl_irt_truncate(path, length);
   if (result != 0) {
     errno = result;
     return -1;
   }
   return 0;
 }
-
-weak_alias (__ftruncate, ftruncate)
+weak_alias (__truncate, truncate)

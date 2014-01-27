@@ -49,7 +49,7 @@ INTERNAL_SYSCALL_NCS_3 (int syscall_nr, int *err, int id1, int id2, int id3)
 __extern_always_inline int
 INTERNAL_SYSCALL_access_2 (int *err, const char *pathname, int mode)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_access (pathname, mode);
   return 0;
 }
 
@@ -121,7 +121,7 @@ INTERNAL_SYSCALL_chdir_1 (int *err, const char *path)
 __extern_always_inline int
 INTERNAL_SYSCALL_chmod_2 (int *err, const char *path, mode_t mode)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_chmod (path, mode);
   return 0;
 }
 
@@ -313,14 +313,14 @@ INTERNAL_SYSCALL_faccessat_3 (int *err, int dirfd, const char *pathname,
 __extern_always_inline int
 INTERNAL_SYSCALL_fchdir_1 (int *err, int fd)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_fchdir (fd);
   return 0;
 }
 
 __extern_always_inline int
 INTERNAL_SYSCALL_fchmod_2 (int *err, int fd, mode_t mode)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_fchmod (fd, mode);
   return 0;
 }
 
@@ -373,7 +373,7 @@ INTERNAL_SYSCALL_fcntl64_3 (int *err, int fd, int cmd,
 __extern_always_inline int
 INTERNAL_SYSCALL_fdatasync_1 (int *err, int fd)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_fdatasync (fd);
   return 0;
 }
 
@@ -417,7 +417,7 @@ INTERNAL_SYSCALL_fsetxattr_5 (int *err, int filedes, const char *name,
 __extern_always_inline int
 INTERNAL_SYSCALL_fsync_1 (int *err, int fd)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_fsync (fd);
   return 0;
 }
 
@@ -594,7 +594,11 @@ __extern_always_inline int
 INTERNAL_SYSCALL_getcwd_2 (int *err, char *buf, size_t size)
 {
   int len;
-  *err = __nacl_irt_getcwd (buf, size, &len);
+  *err = __nacl_irt_getcwd (buf, size);
+  if (*err) {
+    return 0;
+  }
+  for (len = 0; len < size && buf[len] != '\0'; ++len);
   return len;
 }
 
@@ -860,7 +864,7 @@ INTERNAL_SYSCALL_lgetxattr_4 (int *err, const char *path, const char *name,
 __extern_always_inline int
 INTERNAL_SYSCALL_link_2 (int *err, const char *oldpath, const char *newpath)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_link (oldpath, newpath);
   return 0;
 }
 
@@ -1257,8 +1261,12 @@ __extern_always_inline ssize_t
 INTERNAL_SYSCALL_readlink_3 (int *err, const char *path,
 			     char *buf, size_t bufsiz)
 {
-  *err = (38 /* ENOSYS */);
-  return 0;
+  size_t nread;
+  *err = __nacl_irt_readlink (path, buf, bufsiz, &nread);
+  if (*err) {
+    return -1;
+  }
+  return (ssize_t) nread;
 }
 
 __extern_always_inline ssize_t
@@ -1300,7 +1308,7 @@ INTERNAL_SYSCALL_removexattr_2 (int *err, const char *path, const char *name)
 __extern_always_inline int
 INTERNAL_SYSCALL_rename_2 (int *err, const char *oldpath, const char *newpath)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_rename (oldpath, newpath);
   return 0;
 }
 
@@ -1827,7 +1835,7 @@ INTERNAL_SYSCALL_swapon_2 (int *err, const char *path, int swapflags)
 __extern_always_inline int
 INTERNAL_SYSCALL_symlink_2 (int *err, const char *oldpath, const char *newpath)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_symlink (oldpath, newpath);
   return 0;
 }
 
@@ -2006,7 +2014,7 @@ INTERNAL_SYSCALL_uname_1 (int *err, struct utsname *buf)
 __extern_always_inline int
 INTERNAL_SYSCALL_unlink_1 (int *err, const char *pathname)
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_unlink (pathname);
   return 0;
 }
 
@@ -2051,7 +2059,7 @@ __extern_always_inline int
 INTERNAL_SYSCALL_utimes_2 (int *err, const char *filename,
 			   const struct timeval times[2])
 {
-  *err = (38 /* ENOSYS */);
+  *err = __nacl_irt_utimes (filename, times);
   return 0;
 }
 

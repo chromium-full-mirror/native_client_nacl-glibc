@@ -141,6 +141,21 @@ ld {
     __nacl_irt_socketpair;
     __nacl_irt_shutdown;
     __nacl_irt_getpid;
+    __nacl_irt_unlink;
+    __nacl_irt_truncate;
+    __nacl_irt_lstat;
+    __nacl_irt_link;
+    __nacl_irt_rename;
+    __nacl_irt_symlink;
+    __nacl_irt_chmod;
+    __nacl_irt_access;
+    __nacl_irt_readlink;
+    __nacl_irt_utimes;
+    __nacl_irt_fchdir;
+    __nacl_irt_fchmod;
+    __nacl_irt_fsync;
+    __nacl_irt_fdatasync;
+    __nacl_irt_ftruncate;
     # Those are in the dynamic linker, but used by libc.so.
     __libc_enable_secure;
     _dl_argv;
