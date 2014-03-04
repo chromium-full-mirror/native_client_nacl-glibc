@@ -287,8 +287,4 @@ _dl_fini (void)
 		      GL(dl_num_relocations),
 		      GL(dl_num_cache_relocations));
 #endif
-
-#ifdef __native_client__
-  __nacl_futex_fini ();
-#endif
 }

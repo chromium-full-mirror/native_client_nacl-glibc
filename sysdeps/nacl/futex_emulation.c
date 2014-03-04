@@ -15,11 +15,6 @@ void __nacl_futex_init (void)
   __nacl_irt_mutex_create (&global_futex_emulation_mutex_desc);
 }
 
-void __nacl_futex_fini (void)
-{
-  __nacl_irt_mutex_destroy (global_futex_emulation_mutex_desc);
-}
-
 int __nacl_futex_wait (volatile int *addr, int val, unsigned int bitset,
 		       const struct timespec *timeout)
 {
