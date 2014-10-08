@@ -27,7 +27,7 @@ def main(args):
         raise Exception("Usage: fixup <filename>")
     filename = args[0]
     fh = open(filename, "r+")
-    
+
     def check(ty, offset, expected):
         fh.seek(offset)
         data = fh.read(struct.calcsize(ty))
