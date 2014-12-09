@@ -5,6 +5,7 @@
 #include <futex_emulation.h>
 #include <irt_syscalls.h>
 #include <lowlevellock.h>
+#include <string.h>
 
 /* Implementation of all syscalls for use in platform- and OS- independent code
    as inline functions.  Each function translates the syscall arguments into IRT
@@ -598,8 +599,7 @@ INTERNAL_SYSCALL_getcwd_2 (int *err, char *buf, size_t size)
   if (*err) {
     return 0;
   }
-  for (len = 0; len < size && buf[len] != '\0'; ++len);
-  return len;
+  return __strnlen(buf, size - 1) + 1;
 }
 
 __extern_always_inline gid_t
