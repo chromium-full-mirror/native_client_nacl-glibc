@@ -29,7 +29,6 @@
  */
 
 #define NACL_sys_null                    1
-#define NACL_sys_nameservice             2
 
 #define NACL_sys_dup                     8
 #define NACL_sys_dup2                    9
@@ -117,7 +116,6 @@ struct nacl_abi_stat;
 struct timeval;
 struct timespec;
 
-typedef int (*TYPE_nacl_nameservice)(int *desc_in_out);
 typedef int (*TYPE_nacl_dup)(int oldfd);
 typedef int (*TYPE_nacl_dup2)(int oldfd, int newfd);
 typedef int (*TYPE_nacl_read) (int desc, void *buf, size_t count);
