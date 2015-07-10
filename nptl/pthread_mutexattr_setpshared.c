@@ -26,18 +26,15 @@ pthread_mutexattr_setpshared (attr, pshared)
      pthread_mutexattr_t *attr;
      int pshared;
 {
-  struct pthread_mutexattr *iattr;
+  switch (pshared)
+    {
+    case PTHREAD_PROCESS_PRIVATE:       /* This is the default state.  */
+      return 0;
 
-  if (pshared != PTHREAD_PROCESS_PRIVATE
-      && __builtin_expect (pshared != PTHREAD_PROCESS_SHARED, 0))
-    return EINVAL;
+    case PTHREAD_PROCESS_SHARED:        /* NaCl does not support this.  */
+      return ENOTSUP;
 
-  iattr = (struct pthread_mutexattr *) attr;
-
-  if (pshared == PTHREAD_PROCESS_PRIVATE)
-    iattr->mutexkind &= ~PTHREAD_MUTEXATTR_FLAG_PSHARED;
-  else
-    iattr->mutexkind |= PTHREAD_MUTEXATTR_FLAG_PSHARED;
-
-  return 0;
+    default:                            /* Anything else is bogus.  */
+      return EINVAL;
+    }
 }

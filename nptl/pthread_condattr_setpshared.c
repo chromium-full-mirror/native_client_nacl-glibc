@@ -20,18 +20,21 @@
 #include <errno.h>
 #include <pthreadP.h>
 
+
 int
 pthread_condattr_setpshared (attr, pshared)
      pthread_condattr_t *attr;
      int pshared;
 {
-  if (pshared != PTHREAD_PROCESS_PRIVATE
-      && __builtin_expect (pshared != PTHREAD_PROCESS_SHARED, 0))
-    return EINVAL;
+  switch (pshared)
+    {
+    case PTHREAD_PROCESS_PRIVATE:       /* This is the default state.  */
+      return 0;
 
-  int *valuep = &((struct pthread_condattr *) attr)->value;
+    case PTHREAD_PROCESS_SHARED:        /* NaCl does not support this.  */
+      return ENOTSUP;
 
-  *valuep = (*valuep & ~1) | (pshared != PTHREAD_PROCESS_PRIVATE);
-
-  return 0;
+    default:                            /* Anything else is bogus.  */
+      return EINVAL;
+    }
 }

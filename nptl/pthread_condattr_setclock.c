@@ -31,43 +31,20 @@ pthread_condattr_setclock (attr, clock_id)
      pthread_condattr_t *attr;
      clockid_t clock_id;
 {
-  /* Only a few clocks are allowed.  CLOCK_REALTIME is always allowed.
-     CLOCK_MONOTONIC only if the kernel has the necessary support.  */
-  if (clock_id == CLOCK_MONOTONIC)
+  switch (clock_id)
     {
-#ifndef __ASSUME_POSIX_TIMERS
-# ifdef __NR_clock_getres
-      /* Check whether the clock is available.  */
-      static int avail;
+    case CLOCK_REALTIME:
+      /* This is the default state and the only one actually supported.  */
+      return 0;
 
-      if (avail == 0)
-	{
-	  struct timespec ts;
+    case CLOCK_MONOTONIC:
+      /* NaCl recognizes CLOCK_MONOTONIC for other purposes, so it is a
+         "known clock".  But NaCl doesn't support it for this purpose.  */
+      return ENOTSUP;
 
-	  INTERNAL_SYSCALL_DECL (err);
-	  int val;
-	  val = INTERNAL_SYSCALL (clock_getres, err, 2, CLOCK_MONOTONIC, &ts);
-	  avail = INTERNAL_SYSCALL_ERROR_P (val, err) ? -1 : 1;
-	}
-
-      if (avail < 0)
-# endif
-	/* Not available.  */
-	return EINVAL;
-#endif
+    default:
+      /* The only other recognized clocks are CPU-time clocks,
+         which POSIX says should get EINVAL.  */
+      return EINVAL;
     }
-  else if (clock_id != CLOCK_REALTIME)
-    /* If more clocks are allowed some day the storing of the clock ID
-       in the pthread_cond_t structure needs to be adjusted.  */
-    return EINVAL;
-
-  /* Make sure the value fits in the bits we reserved.  */
-  assert (clock_id < (1 << COND_NWAITERS_SHIFT));
-
-  int *valuep = &((struct pthread_condattr *) attr)->value;
-
-  *valuep = ((*valuep & ~(((1 << COND_NWAITERS_SHIFT) - 1) << 1))
-	     | (clock_id << 1));
-
-  return 0;
 }
