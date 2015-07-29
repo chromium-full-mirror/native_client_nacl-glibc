@@ -10,9 +10,8 @@
 #include <time.h>
 
 #include <nacl_stat.h>
+#include <nacl_dirent.h>
 
-struct dirent;
-struct nacl_abi_stat;
 struct timeval;
 struct timespec;
 struct sockaddr;
@@ -107,7 +106,7 @@ extern int (*__nacl_irt_dup) (int fd, int *newfd);
 extern int (*__nacl_irt_dup2) (int fd, int newfd);
 extern int (*__nacl_irt_fstat) (int fd, struct nacl_abi_stat *);
 extern int (*__nacl_irt_stat) (const char *pathname, struct nacl_abi_stat *);
-extern int (*__nacl_irt_getdents) (int fd, struct dirent *, size_t count,
+extern int (*__nacl_irt_getdents) (int fd, struct nacl_abi_dirent *, size_t count,
                                    size_t *nread);
 
 extern int (*__nacl_irt_sysbrk)(void **newbrk);

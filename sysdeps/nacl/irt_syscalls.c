@@ -102,7 +102,7 @@ static int nacl_irt_stat (const char *pathname, struct nacl_abi_stat *st) {
   return -NACL_SYSCALL (stat) (pathname, st);
 }
 
-static int nacl_irt_getdents (int fd, struct dirent *buf, size_t count,
+static int nacl_irt_getdents (int fd, struct nacl_irt_dirent *buf, size_t count,
                               size_t *nread) {
   int rv = NACL_SYSCALL (getdents) (fd, buf, count);
   if (rv < 0)
@@ -310,7 +310,7 @@ int (*__nacl_irt_dup) (int fd, int *newfd);
 int (*__nacl_irt_dup2) (int fd, int newfd);
 int (*__nacl_irt_fstat) (int fd, struct nacl_abi_stat *);
 int (*__nacl_irt_stat) (const char *pathname, struct nacl_abi_stat *);
-int (*__nacl_irt_getdents) (int fd, struct dirent *, size_t count,
+int (*__nacl_irt_getdents) (int fd, struct nacl_abi_dirent *, size_t count,
                             size_t *nread);
 int (*__nacl_irt_socket) (int domain, int type, int protocol, int *sd);
 int (*__nacl_irt_accept) (int sockfd, struct sockaddr *addr,

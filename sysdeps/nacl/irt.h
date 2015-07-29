@@ -12,8 +12,8 @@
 
 struct timeval;
 struct timespec;
-struct stat;
-struct dirent;
+struct nacl_abi_dirent;
+struct nacl_abi_stat;
 
 struct PP_StartFunctions;
 struct PP_ThreadFunctions;
@@ -110,8 +110,8 @@ struct nacl_irt_fdio {
   int (*read)(int fd, void *buf, size_t count, size_t *nread);
   int (*write)(int fd, const void *buf, size_t count, size_t *nwrote);
   int (*seek)(int fd, off_t offset, int whence, off_t *new_offset);
-  int (*fstat)(int fd, struct stat *);
-  int (*getdents)(int fd, struct dirent *, size_t count, size_t *nread);
+  int (*fstat)(int fd, struct nacl_abi_stat *);
+  int (*getdents)(int fd, struct nacl_abi_dirent *, size_t count, size_t *nread);
 };
 
 /*
@@ -127,7 +127,7 @@ struct nacl_irt_fdio {
 #define NACL_IRT_FILENAME_v0_1      "nacl-irt-filename-0.1"
 struct nacl_irt_filename {
   int (*open)(const char *pathname, int oflag, mode_t cmode, int *newfd);
-  int (*stat)(const char *pathname, struct stat *);
+  int (*stat)(const char *pathname, struct nacl_abi_stat *);
 };
 
 /*

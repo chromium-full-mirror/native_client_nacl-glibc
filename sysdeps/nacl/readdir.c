@@ -3,7 +3,6 @@
 #include <stddef.h>
 #include <string.h>
 
-#include <nacl_dirent.h>
 #include <irt_syscalls.h>
 
 #define __READDIR __readdir
