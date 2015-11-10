@@ -95,7 +95,7 @@ open64 (__const char *__path, int __oflag, ...)
 
 
 #ifdef __USE_ATFILE
-# ifndef __USE_FILE_OFFSET64
+# if !defined(__USE_FILE_OFFSET64) || defined(__native_client__)
 extern int __openat_2 (int __fd, __const char *__path, int __oflag)
      __nonnull ((2));
 extern int __REDIRECT (__openat_alias, (int __fd, __const char *__path,
